@@ -33,6 +33,27 @@ STATE = START;
 
 -------------------------------
 
+--stop the extended events
+----------------------
+
+EXEC sp_configure 'show advanced options', 1 ;
+GO
+RECONFIGURE ;
+GO
+/* Enabled the blocked process report */
+EXEC sp_configure 'blocked process threshold', '0';
+RECONFIGURE
+GO
+/* Start the Extended Events session */
+ALTER EVENT SESSION [blocked_process] ON SERVER
+STATE = STOP;
+
+EXEC sp_configure 'show advanced options', 0 ;
+GO
+RECONFIGURE ;
+GO
+--------------
+
 WITH events_cte AS (
   SELECT
     xevents.event_data,
